@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+var cors = require('cors')
 const path = require('path');
 require('dotenv').config();
 
@@ -29,6 +30,7 @@ let app = express();
 // Body Parser Middleware
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
+app.use(cors());
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 
@@ -41,11 +43,6 @@ app.use((req, res, next) => {
      }
      next();
 });
-
-app.get('/cors', (req, res) => {
-    res.set('Access-Control-Allow-Origin', '*');
-    res.send({ "msg": "This has CORS enabled 🎈" })
-})
 
 app.use('/api/articles', articles);
 app.use('/api/users', users);
