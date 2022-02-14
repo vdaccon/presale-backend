@@ -30,7 +30,7 @@ let app = express();
 // Body Parser Middleware
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({ origin: "https://dgtlz-backend.herokuapp.com/api/users/signup", credentials: true }));
 
 app.use(express.static(path.join(__dirname, 'client/build')));
 
