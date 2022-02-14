@@ -42,6 +42,11 @@ app.use((req, res, next) => {
      next();
 });
 
+app.get('/cors', (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.send({ "msg": "This has CORS enabled 🎈" })
+})
+
 app.use('/api/articles', articles);
 app.use('/api/users', users);
 
