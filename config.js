@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+console.log('process.env.JWTSECRET', process.env.JWTSECRET);
 const JWTSECRET = process.env.JWTSECRET;
 // const DB_USERNAME = process.env.DB_USERNAME;
 const DB_USERNAME = 'rupendra';

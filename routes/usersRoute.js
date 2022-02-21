@@ -108,6 +108,8 @@ router.post('/login', (req, res) => {
     const username = req.body.username || '';
     const password = req.body.password || '';
 
+    console.log(req.body);
+
     let errors = {};
 
     if (username === '') {
@@ -120,7 +122,7 @@ router.post('/login', (req, res) => {
     if (Object.keys(errors).length > 0) {
         res.json({ errors });
     } else {
-        User.findOne({username: username}, (err, user) => {
+        User.findOne({email: username}, (err, user) => {
             if (err) throw err;
             if (Boolean(user)) {
                 // Match Password
@@ -131,13 +133,13 @@ router.post('/login', (req, res) => {
                                 id: user._id,
                                 username: user.username
                             }, config.jwtSecret);
-                        res.json({ token, success: 'success' })
+                        res.json({ token, success: 'success', details: user })
                     } else {
                        res.json({ errors: { invalidCredentials: 'Invalid Username or Password' } });
                     }
                 });
             } else {
-                res.json({ errors: { invalidCredentials: 'Invalid Username or Password' } });
+                res.json({ errors: { invalidCredentials: 'Invalid Username or Password else' } });
             }
         });
     }
