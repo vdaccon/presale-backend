@@ -1,6 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 const User = require('../models/usersModel.js');
 const config = require('../config');
@@ -27,6 +28,41 @@ const checkUserUniqueness = (field, value) => {
         .catch(err => console.log(err))
 }
 
+const sendEmail = (useremail) => {
+  console.log('useremail', useremail);
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'dgtlz.finance@gmail.com',
+      pass: 'adkztkP!22'
+    },
+  });
+  
+  const mailOptions = {
+    from: 'dgtlz.finance@gmail.com',
+    to: useremail,
+    subject: 'Welcome to DGTLZ Finance',
+    html: `<h2 style="color: #5e9ca0;">Welcome to DGTLZ Finance</h2>
+            <p>Greeting of the Day!</p>
+            <p>Verify your email address by clicking on the below link:</p>
+            <p>Click&nbsp; <a href="http://dgtlz.finance/verify"> 
+            <span style="background-color: #666699; color: #fff; display: inline-block; padding: 3px 10px; font-weight: bold; border-radius: 5px;">
+              Verify Email</span> </a> to verify.
+            </p><p>&nbsp;</p>
+            <p>Thanks and Regards,<br />DGTLZ Finance Team</p>`
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
+
 router.post('/validate', async (req, res) => {
     const { field, value } = req.body;
     const { error, isUnique } = await checkUserUniqueness(field, value);
@@ -39,7 +75,6 @@ router.post('/validate', async (req, res) => {
 });
 
 router.post('/signup', (req, res) => {
-    console.log('Request---', req.body);
     const name = req.body.name || '';
     const username = req.body.username || '';
     const email = req.body.email || '';
@@ -84,7 +119,9 @@ router.post('/signup', (req, res) => {
             name: name,
             username: username,
             email: email,
-            password: password
+            password: password,
+            verified: false,
+            isKyc: false
         });
 
         // Generate the Salt
@@ -97,6 +134,7 @@ router.post('/signup', (req, res) => {
                 // Save the User
                 newUser.save(function(err){
                     if(err) return err
+                    sendEmail(email)
                     res.json({ success: 'success' });
                 });
             });
@@ -151,7 +189,30 @@ router.get('/list', (req, res) => {
         if (err) throw err;
         res.json({ user, success: 'success' })
     })
+});
 
+router.post('/verify', (req, res) => {
+  const userName = req.body.name;
+
+    return User.updateOne(
+      {username:userName}, 
+      {verified:true},
+      (err, user) => {
+        if (err) throw err;
+        res.json({ user, success: 'User Verified' })
+    })
+});
+
+router.post('/userdetails', (req, res) => {
+  let userid = req.body.id;
+  console.log('userid', userid)
+
+  return User.findOne({ _id: userid}, function(err, result) {
+    console.log('result', result);
+    if (err) throw err;
+    res.json({result, success: 'success'});
+  })
+  .catch(err => console.log(err))
 });
 
 module.exports = router;
