@@ -5,6 +5,17 @@ var cors = require('cors')
 const path = require('path');
 require('dotenv').config();
 
+
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('./key.pem'),
+  cert: fs.readFileSync('./cert.pem')
+};
+
+
+
 const articles = require('./routes/articlesRoute.js');
 const users = require('./routes/usersRoute.js');
 const config = require('./config.js');
@@ -52,6 +63,15 @@ app.use('/api/users', users);
 //     res.sendFile(path.join(__dirname, '/client/build/index.html'));
 // });
 
-app.listen(PORT, () => {
-    console.log('Server started on port', PORT);
-});
+
+https.createServer(options, function (req, res) {
+  res.writeHead(200);
+  res.end("Server Started...\n");
+}).listen(PORT, () => {
+  console.log('Server started on port', PORT);
+  });
+
+// app.listen(PORT, () => {
+//     console.log('Server started on port', PORT);
+// });
+
