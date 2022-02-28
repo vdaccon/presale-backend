@@ -14,15 +14,15 @@ const MONGODB_URI = config.mongodburi;
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(MONGODB_URI, {
-    useUnifiedTopology: true,
-    useNewUrlParser: true,
-    useCreateIndex: true
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useCreateIndex: true
 });
 mongoose.connection.on('connected', () => {
-    console.log('Connected to MongoDB');
+  console.log('Connected to MongoDB');
 });
 mongoose.connection.on('error', (error) => {
-    console.log(error);
+  console.log(error);
 });
 
 let app = express();
@@ -35,13 +35,13 @@ app.use(cors({ origin: "*", credentials: true }));
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.use((req, res, next) => {
-     res.header("Access-Control-Allow-Origin", "*");
-     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-     if (req.method === 'OPTIONS') {
-         res.header("Access-Control-Allow-Methods", "PUT, POST, DELETE, GET");
-         return res.status(200).json({});
-     }
-     next();
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  if (req.method === 'OPTIONS') {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, DELETE, GET");
+    return res.status(200).json({});
+  }
+  next();
 });
 
 app.use('/api/articles', articles);
@@ -53,5 +53,5 @@ app.use('/api/users', users);
 // });
 
 app.listen(PORT, () => {
-    console.log('Server started on port', PORT);
+  console.log('Server started on port', PORT);
 });

@@ -23,6 +23,19 @@ const UserSchema = mongoose.Schema({
         type: Boolean,
         default: false,
         required: true
+    },
+    planType: {
+      type: String,
+      required: false
+    },
+    iskyc: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    logintype: {
+      type: String,
+      required: true
     }
 });
 

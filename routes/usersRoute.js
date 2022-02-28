@@ -2,11 +2,10 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
-
-const User = require('../models/usersModel.js');
 const config = require('../config');
-
 const router = express.Router();
+const User = require('../models/usersModel.js');
+
 
 // Check if E-mail is Valid or not
 const validateEmail = (email) => {
@@ -15,17 +14,19 @@ const validateEmail = (email) => {
 }
 
 const checkUserUniqueness = (field, value) => {
-    return { error, isUnique } = User.findOne({[field]: value}).exec()
-        .then(user => {
-            let res = {};
-            if (Boolean(user)) {
-                res = { error: { [field]: "This " + field + " is not available" }, isUnique: false };
-            } else {
-                res = { error: { [field]: "" }, isUnique: true };
-            }
-            return res;
-        })
-        .catch(err => console.log(err))
+  return { error, isUnique } = User.findOne({[field]: value}).exec()
+    .then(user => {
+      let res = {};
+      if (Boolean(user)) {
+        return res = { error: { [field]: "This " + field + " is not available" }, isUnique: false, udata: user };
+      } else {
+        return res = { error: { [field]: "" }, isUnique: true, udata: user };
+      }
+    })
+    .catch(err => {
+      console.log('catch bolck----', err);
+      throw err;
+    })
 }
 
 const sendEmail = (useremail) => {
@@ -80,8 +81,9 @@ router.post('/signup', (req, res) => {
     const email = req.body.email || '';
     const password = req.body.password || '';
     const confirmPassword = req.body.confirmPassword || '';
+    const logintype = req.body.logintype || '';
 
-    const reqBody = { name, username, email, password, confirmPassword };
+    const reqBody = { name, username, email, password, confirmPassword, logintype };
 
     let errors = {};
     Object.keys(reqBody).forEach(async field => {
@@ -89,18 +91,26 @@ router.post('/signup', (req, res) => {
             errors = {...errors, [field]: 'This field is required'}
             console.log("errors",errors)
         }
+
+
+        console.log('logintype', logintype);
+        if ((logintype != 'Gmail' && logintype != 'Facebook')) {
         
-        if (field === 'username' || field === 'email') {
-            const value = reqBody[field];
-            const { error, isUnique } = await checkUserUniqueness(field, value);
-            if (!isUnique) {
-                errors = {...errors, ...error};
-                console.log("errors",errors)
-                res.json({ errors: { invalidCredentials: 'Email is already exist.' } });
-            }else{
-                console.log("aaaaaa",isUnique)
-            }
+          if (field === 'username' || field === 'email') {
+              const value = reqBody[field];
+              const { error, isUnique, udata } = await checkUserUniqueness(field, value);
+              if (!isUnique) {
+                  errors = {...errors, ...error};
+                  console.log("errors",errors)
+                  res.json({ errors: { invalidCredentials: 'Email is already exist.' }, da: udata });
+                  return;
+              }else{
+                  console.log("aaaaaa",isUnique)
+                  console.log("udata---",udata)
+              }
+          }
         }
+
         if (field === 'email' && !validateEmail(reqBody[field])) {
             errors = {...errors, [field]: 'Not a valid Email'}
         }
@@ -115,30 +125,38 @@ router.post('/signup', (req, res) => {
     if (Object.keys(errors).length > 0) {
         res.json({ errors });
     } else {
-        const newUser = new User({
-            name: name,
-            username: username,
-            email: email,
-            password: password,
-            verified: false,
-            isKyc: false
-        });
+      const newUser = new User({
+        name: name,
+        username: username,
+        email: email,
+        password: password,
+        verified: false,
+        iskyc: false,
+        logintype: logintype
+      });
 
-        // Generate the Salt
-        bcrypt.genSalt(10, (err, salt) => {
-            if(err) return err;
-            // Create the hashed password
-            bcrypt.hash(newUser.password, salt, (err, hash) => {
-                if(err) return err;
-                newUser.password = hash;
-                // Save the User
-                newUser.save(function(err){
-                    if(err) return err
-                    sendEmail(email)
-                    res.json({ success: 'success' });
-                });
-            });
+      // Generate the Salt
+      bcrypt.genSalt(10, (err, salt) => {
+        if(err) return err;
+        // Create the hashed password
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if(err) {
+            res.json({ error: err});
+            return;
+          }
+          newUser.password = hash;
+          // Save the User
+          newUser.save(function(err, value){
+            console.log("Erro",err)
+            if(err) {
+              res.json({ error: 'User present'});
+              return;
+            }
+            sendEmail(email)
+            res.json({ success: 'success', details: value._id });
+          });
         });
+      });
     }
 });
 
@@ -183,11 +201,10 @@ router.post('/login', (req, res) => {
     }
 });
 
-
 router.get('/list', (req, res) => {
     return User.find((err, user) => {
         if (err) throw err;
-        res.json({ user, success: 'success' })
+        res.json({ details: user, success: 'success' })
     })
 });
 
@@ -199,20 +216,82 @@ router.post('/verify', (req, res) => {
       {verified:true},
       (err, user) => {
         if (err) throw err;
-        res.json({ user, success: 'User Verified' })
+        res.json({ details: user, success: 'User Verified' })
     })
 });
 
-router.post('/userdetails', (req, res) => {
+router.post('/userdetails', async (req, res) => {
   let userid = req.body.id;
   console.log('userid', userid)
 
   return User.findOne({ _id: userid}, function(err, result) {
     console.log('result', result);
     if (err) throw err;
-    res.json({result, success: 'success'});
+    if (result) {
+      res.json({details: result, success: 'success'});
+    } else {
+      res.json({success: 'Fail-no data found'});
+    } 
   })
   .catch(err => console.log(err))
+});
+
+router.post('/socialogin', async (req, res) => {
+  // let useremail = req.body.email;
+
+  const name = req.body.name || '';
+  const username = req.body.username || '';
+  const useremail = req.body.email || '';
+  const password = req.body.password || '';
+  const logintype = req.body.logintype || '';
+
+  console.log('logintype', logintype);
+
+  return User.find({ email: useremail, logintype: logintype}, async function(err, result) {
+    if(err) {
+      res.json({ error: err});
+      return;
+    }
+    if (result != '') {
+      res.json({details: result, success: 'success'});
+    } else {
+      // res.json({success: 'notfound'});
+      // res.end();
+      const newUser = new User({
+        name: name,
+        username: username,
+        email: useremail,
+        password: password,
+        verified: false,
+        iskyc: false,
+        logintype: logintype
+      });
+
+      // Generate the Salt
+      bcrypt.genSalt(10, (err, salt) => {
+        if(err) return err;
+        // Create the hashed password
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if(err) {
+            res.json({ error: err});
+            return;
+          }
+          newUser.password = hash;
+          // Save the User
+          newUser.save(function(err, value){
+            console.log("Erro",err)
+            if(err) {
+              res.json({ error: `User already exit with ${logintype == 'Gmail' ? 'Facebook' : 'Gmail'} Account`});
+              return;
+            }
+            sendEmail(email)
+            res.json({ success: 'success', details: value._id });
+          });
+        });
+      });
+
+    }
+  })
 });
 
 module.exports = router;
