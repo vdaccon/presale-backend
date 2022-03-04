@@ -195,7 +195,7 @@ router.post('/login', (req, res) => {
                     }
                 });
             } else {
-                res.json({ errors: { invalidCredentials: 'Invalid Username or Password else' } });
+                res.json({ errors: { invalidCredentials: 'Invalid Username or Password else 1' }, d: user });
             }
         });
     }
@@ -206,6 +206,27 @@ router.get('/list', (req, res) => {
         if (err) throw err;
         res.json({ details: user, success: 'success' })
     })
+});
+
+router.get('/kyclist', (req, res) => {
+    return User.find({ iskyc: false}, (err, user) => {
+        if (err) throw err;
+        res.json({ details: user, success: 'success' })
+    })
+});
+
+router.post('/approveKyc', (req, res) => {
+  const filter = { _id: req.body.userid };
+  const update = {
+    iskyc: true
+  };
+  return User.findOneAndUpdate(filter, update, {new: true, useFindAndModify: false},
+    function(err, result) {
+      if(err) {
+        return res.json({ error: 'Fail to upload image'});
+      }
+      return res.json({ success: 'success' });
+    });
 });
 
 router.post('/verify', (req, res) => {
@@ -235,6 +256,30 @@ router.post('/userdetails', async (req, res) => {
   })
   .catch(err => console.log(err))
 });
+
+
+router.post('/imageUpload', async (req, res) => {
+  let userid = req.body.id;
+  let image = req.body.image;
+  let docType = req.body.docType;
+  let docName = req.body.docName;
+
+  const filter = { _id: userid };
+  const update = { 
+    image: image,
+    docType: docType,
+    docName: docName,
+  };
+  
+  return User.findOneAndUpdate(filter, update, {new: true, useFindAndModify: false},
+    function(err, result) {
+      if(err) {
+        return res.json({ error: 'Fail to upload image'});
+      }
+      return res.json({ success: 'success' });
+    });
+  });
+
 
 router.post('/socialogin', async (req, res) => {
   // let useremail = req.body.email;
