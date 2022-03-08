@@ -77,13 +77,13 @@ router.post('/validate', async (req, res) => {
 
 router.post('/signup', (req, res) => {
     const name = req.body.name || '';
-    const username = req.body.username || '';
+    const lastname = req.body.lastname || '';
     const email = req.body.email || '';
     const password = req.body.password || '';
     const confirmPassword = req.body.confirmPassword || '';
     const logintype = req.body.logintype || '';
 
-    const reqBody = { name, username, email, password, confirmPassword, logintype };
+    const reqBody = { name, lastname, email, password, confirmPassword, logintype };
 
     let errors = {};
     Object.keys(reqBody).forEach(async field => {
@@ -127,7 +127,8 @@ router.post('/signup', (req, res) => {
     } else {
       const newUser = new User({
         name: name,
-        username: username,
+        lastname: lastname,
+        username: `${name.charAt(0).toLowerCase()}.${lastname.toLowerCase()}`,
         email: email,
         password: password,
         verified: false,
@@ -285,7 +286,7 @@ router.post('/socialogin', async (req, res) => {
   // let useremail = req.body.email;
 
   const name = req.body.name || '';
-  const username = req.body.username || '';
+  const lastname = req.body.lastname || '';
   const useremail = req.body.email || '';
   const password = req.body.password || '';
   const logintype = req.body.logintype || '';
@@ -304,7 +305,7 @@ router.post('/socialogin', async (req, res) => {
       // res.end();
       const newUser = new User({
         name: name,
-        username: username,
+        lastname: lastname,
         email: useremail,
         password: password,
         verified: false,

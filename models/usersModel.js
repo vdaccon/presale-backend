@@ -2,13 +2,17 @@ const mongoose = require('mongoose');
 
 const UserSchema = mongoose.Schema({
     name: {
-        type: String,
-        required: false
+      type: String,
+      required: false
+    },
+    lastname: {
+      type: String,
+      required: false
     },
     username: {
-        type: String,
-        unique: true,
-        required: false
+      type: String,
+      // unique: true,
+      required: false
     },
     image:{
       type: String,
@@ -21,18 +25,18 @@ const UserSchema = mongoose.Schema({
       type: String
     },
     email: {
-        type: String,
-        unique: true,
-        required: false
+      type: String,
+      unique: true,
+      required: false
     },
     password: {
-        type: String,
-        required: false
+      type: String,
+      required: false
     },
     emailVerified: {
-        type: Boolean,
-        default: false,
-        required: false
+      type: Boolean,
+      default: false,
+      required: false
     },
     planType: {
       type: String,
