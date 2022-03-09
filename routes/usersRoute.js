@@ -29,7 +29,7 @@ const checkUserUniqueness = (field, value) => {
     })
 }
 
-const sendEmail = (useremail) => {
+const sendEmail = (useremail, userid) => {
   console.log('useremail', useremail);
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -48,7 +48,7 @@ const sendEmail = (useremail) => {
     html: `<h2 style="color: #5e9ca0;">Welcome to DGTLZ Finance</h2>
             <p>Greeting of the Day!</p>
             <p>Verify your email address by clicking on the below link:</p>
-            <p>Click&nbsp; <a href="http://dgtlz.finance/verify"> 
+            <p>Click&nbsp; <a href="http://dgtlz.finance/verify?post=${userid}"> 
             <span style="background-color: #666699; color: #fff; display: inline-block; padding: 3px 10px; font-weight: bold; border-radius: 5px;">
               Verify Email</span> </a> to verify.
             </p><p>&nbsp;</p>
@@ -153,7 +153,7 @@ router.post('/signup', (req, res) => {
               res.json({ error: 'User present'});
               return;
             }
-            sendEmail(email)
+            sendEmail(email, value?._id)
             res.json({ success: 'success', details: value._id });
           });
         });
@@ -217,6 +217,7 @@ router.get('/kyclist', (req, res) => {
 });
 
 router.post('/approveKyc', (req, res) => {
+  console.log('Approve Kyc', req.body);
   const filter = { _id: req.body.userid };
   const update = {
     iskyc: true
@@ -230,16 +231,19 @@ router.post('/approveKyc', (req, res) => {
     });
 });
 
-router.post('/verify', (req, res) => {
-  const userName = req.body.name;
-
-    return User.updateOne(
-      {username:userName}, 
-      {verified:true},
-      (err, user) => {
-        if (err) throw err;
-        res.json({ details: user, success: 'User Verified' })
-    })
+router.post('/verifyEmail', (req, res) => {
+  console.log('verifiy email', req.body);
+  const filter = { _id: req.body.id };
+  const update = {
+    emailVerified: true
+  };
+  return User.findOneAndUpdate(filter, update, {new: true, useFindAndModify: false},
+    function(err, result) {
+      if(err) {
+        return res.json({ error: 'Fail to Verify'});
+      }
+      return res.json({ success: 'success' });
+    });
 });
 
 router.post('/userdetails', async (req, res) => {
