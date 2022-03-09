@@ -153,7 +153,7 @@ router.post('/signup', (req, res) => {
               res.json({ error: 'User present'});
               return;
             }
-            sendEmail(email, value?._id)
+            sendEmail(email, value._id)
             res.json({ success: 'success', details: value._id });
           });
         });
