@@ -128,7 +128,7 @@ router.post('/signup', (req, res) => {
       const newUser = new User({
         name: name,
         lastname: lastname,
-        username: `${name.charAt(0).toLowerCase()}.${lastname.toLowerCase()}`,
+        username: `${name.charAt(0).toLowerCase()}.${lastname.toLowerCase()}@${new Date()}`,
         email: email,
         password: password,
         verified: false,
