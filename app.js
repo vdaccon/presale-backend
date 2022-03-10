@@ -60,18 +60,18 @@ app.use('/api/users', users);
 // });
 
 
-const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
+// const options = {
+//   key: fs.readFileSync('key.pem'),
+//   cert: fs.readFileSync('cert.pem')
+// };
 
-https.createServer(options,app, function (req, res) {
-  res.writeHead(200);
-  res.end("hello world\n");
-  console.log('Server started on port', PORT);
-}).listen(PORT);
-
-
-// app.listen(PORT, () => {
+// https.createServer(options,app, function (req, res) {
+//   res.writeHead(200);
+//   res.end("hello world\n");
 //   console.log('Server started on port', PORT);
-// });
+// }).listen(PORT);
+
+
+app.listen(PORT, () => {
+  console.log('Server started on port', PORT);
+});
