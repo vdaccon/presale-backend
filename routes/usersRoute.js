@@ -321,7 +321,10 @@ router.post('/socialogin', async (req, res) => {
         password: password,
         verified: false,
         iskyc: false,
-        logintype: logintype
+        logintype: logintype,
+        username: `${name.charAt(0).toLowerCase()}.${lastname.toLowerCase()}@${new Date()}`,
+        mobile: '',
+        location: ''
       });
 
       // Generate the Salt
