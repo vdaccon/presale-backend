@@ -60,18 +60,24 @@ app.use('/api/users', users);
 // });
 
 
-// const options = {
-//   key: fs.readFileSync('key.pem'),
-//   cert: fs.readFileSync('cert.pem')
-// };
+const options = {
+  key: fs.readFileSync('/etc/ssl/private/ssl-cert-snakeoil.key'),
+  cert: fs.readFileSync('/etc/ssl/certs/ssl-cert-snakeoil.pem'),
+  // key: fs.readFileSync('key.pem'),
+  // cert: fs.readFileSync('cert.pem')
+  // ca: [
+  //   fs.readFileSync('/etc/ssl/certs/proftpd.crt'),
+  //   fs.readFileSync('path/to/ca_bundle_certificate.crt')
+  //   ]
+};
 
-// https.createServer(options,app, function (req, res) {
-//   res.writeHead(200);
-//   res.end("hello world\n");
-//   console.log('Server started on port', PORT);
-// }).listen(PORT);
-
-
-app.listen(PORT, () => {
+https.createServer(options,app, function (req, res) {
+  res.writeHead(200);
+  res.end("hello world\n");
   console.log('Server started on port', PORT);
-});
+}).listen(PORT);
+
+
+// app.listen(PORT, () => {
+//   console.log('Server started on port', PORT);
+// });
