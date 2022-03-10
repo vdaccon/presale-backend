@@ -14,6 +14,12 @@ const UserSchema = mongoose.Schema({
       // unique: true,
       required: false
     },
+    mobile: {
+      type: String
+    },
+    location: {
+      type: String
+    },
     image:{
       type: String,
       required: false

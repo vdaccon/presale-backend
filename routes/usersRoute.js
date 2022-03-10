@@ -30,7 +30,6 @@ const checkUserUniqueness = (field, value) => {
 }
 
 const sendEmail = (useremail, userid) => {
-  console.log('useremail', useremail);
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587,
@@ -89,11 +88,8 @@ router.post('/signup', (req, res) => {
     Object.keys(reqBody).forEach(async field => {
         if (reqBody[field] === '') {
             errors = {...errors, [field]: 'This field is required'}
-            console.log("errors",errors)
         }
 
-
-        console.log('logintype', logintype);
         if ((logintype != 'Gmail' && logintype != 'Facebook')) {
         
           if (field === 'username' || field === 'email') {
@@ -101,7 +97,6 @@ router.post('/signup', (req, res) => {
               const { error, isUnique, udata } = await checkUserUniqueness(field, value);
               if (!isUnique) {
                   errors = {...errors, ...error};
-                  console.log("errors",errors)
                   res.json({ errors: { invalidCredentials: 'Email is already exist.' }, da: udata });
                   return;
               }else{
@@ -133,7 +128,9 @@ router.post('/signup', (req, res) => {
         password: password,
         verified: false,
         iskyc: false,
-        logintype: logintype
+        logintype: logintype,
+        mobile: '',
+        location: ''
       });
 
       // Generate the Salt
@@ -148,7 +145,6 @@ router.post('/signup', (req, res) => {
           newUser.password = hash;
           // Save the User
           newUser.save(function(err, value){
-            console.log("Erro",err)
             if(err) {
               res.json({ error: 'User present'});
               return;
@@ -164,9 +160,6 @@ router.post('/signup', (req, res) => {
 router.post('/login', (req, res) => {
     const username = req.body.username || '';
     const password = req.body.password || '';
-
-    console.log(req.body);
-
     let errors = {};
 
     if (username === '') {
@@ -217,7 +210,6 @@ router.get('/kyclist', (req, res) => {
 });
 
 router.post('/approveKyc', (req, res) => {
-  console.log('Approve Kyc', req.body);
   const filter = { _id: req.body.userid };
   const update = {
     iskyc: true
@@ -232,7 +224,6 @@ router.post('/approveKyc', (req, res) => {
 });
 
 router.post('/verifyEmail', (req, res) => {
-  console.log('verifiy email', req.body);
   const filter = { _id: req.body.id };
   const update = {
     emailVerified: true
@@ -248,10 +239,8 @@ router.post('/verifyEmail', (req, res) => {
 
 router.post('/userdetails', async (req, res) => {
   let userid = req.body.id;
-  console.log('userid', userid)
 
   return User.findOne({ _id: userid}, function(err, result) {
-    console.log('result', result);
     if (err) throw err;
     if (result) {
       res.json({details: result, success: 'success'});
@@ -283,6 +272,26 @@ router.post('/imageUpload', async (req, res) => {
       }
       return res.json({ success: 'success' });
     });
+});
+
+router.post('/userProfileUpdate', async (req, res) => {
+  let userid = req.body.id;
+  let location = req.body.location;
+  let mobile = req.body.mobile;
+
+  const filter = { _id: userid };
+  const update = { 
+    location: location,
+    mobile: mobile,
+  };
+  
+  return User.findOneAndUpdate(filter, update, {new: true, useFindAndModify: false},
+    function(err, result) {
+      if(err) {
+        return res.json({ error: 'Fail to upload image'});
+      }
+      return res.json({ success: 'success' });
+    });
   });
 
 
@@ -294,8 +303,6 @@ router.post('/socialogin', async (req, res) => {
   const useremail = req.body.email || '';
   const password = req.body.password || '';
   const logintype = req.body.logintype || '';
-
-  console.log('logintype', logintype);
 
   return User.find({ email: useremail, logintype: logintype}, async function(err, result) {
     if(err) {
