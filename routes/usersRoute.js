@@ -277,7 +277,7 @@ router.post('/imageUpload', async (req, res) => {
 router.post('/userProfileUpdate', async (req, res) => {
   let userid = req.body.id;
   let location = req.body.location;
-  let mobile = req.body.mobile;
+  let mobile = req.body.phone;
 
   const filter = { _id: userid };
   const update = { 
