@@ -344,7 +344,7 @@ router.post('/socialogin', async (req, res) => {
               res.json({ error: `User already exit with ${logintype == 'Gmail' ? 'Facebook' : 'Gmail'} Account`});
               return;
             }
-            sendEmail(email)
+            sendEmail(useremail)
             res.json({ success: 'success', details: value._id });
           });
         });
