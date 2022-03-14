@@ -292,7 +292,28 @@ router.post('/userProfileUpdate', async (req, res) => {
       }
       return res.json({ success: 'success' });
     });
-  });
+});
+
+router.post('/updateAdminProfile', async (req, res) => {
+  console.log('req', req);
+  let userid = req.body._id;
+  let psw = req.body.password;
+  let name = req.body.name;
+
+  const filter = { _id: userid };
+  const update = { 
+    name: name,
+    password: psw,
+  };
+  
+  return User.findOneAndUpdate(filter, update, {new: true, useFindAndModify: false},
+    function(err, result) {
+      if(err) {
+        return res.json({ error: 'Fail to upload profile'});
+      }
+      return res.json({ success: 'success' });
+    });
+});
 
 
 router.post('/socialogin', async (req, res) => {

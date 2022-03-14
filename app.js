@@ -54,11 +54,13 @@ app.use('/api/articles', articles);
 app.use('/api/users', users);
 app.use('/api/users', users);
 
-
 // app.get('*', (req, res) => {
 //     res.sendFile(path.join(__dirname, '/client/build/index.html'));
 // });
 
+
+
+// --------------------------------- LIVE REQUEST
 
 const options = {
   key: fs.readFileSync('/etc/ssl/private/ssl-cert-snakeoil.key'),
@@ -71,7 +73,12 @@ https.createServer(options,app, function (req, res) {
   console.log('Server started on port', PORT);
 }).listen(PORT);
 
+// ------------------------------- LIVE REQUEST END
+
+// ------------------------------- LOCAL REQUEST
 
 // app.listen(PORT, () => {
 //   console.log('Server started on port', PORT);
 // });
+
+// ------------------------------- LOCAL REQUEST END
