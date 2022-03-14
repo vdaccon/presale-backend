@@ -47,7 +47,7 @@ const sendEmail = (useremail, userid) => {
     html: `<h2 style="color: #5e9ca0;">Welcome to DGTLZ Finance</h2>
             <p>Greeting of the Day!</p>
             <p>Verify your email address by clicking on the below link:</p>
-            <p>Click&nbsp; <a href="http://dgtlz.finance/verify?post=${userid}"> 
+            <p>Click&nbsp; <a href="https://dgtlz.finance/verify?post=${userid}"> 
             <span style="background-color: #666699; color: #fff; display: inline-block; padding: 3px 10px; font-weight: bold; border-radius: 5px;">
               Verify Email</span> </a> to verify.
             </p><p>&nbsp;</p>
