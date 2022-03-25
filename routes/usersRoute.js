@@ -197,7 +197,7 @@ router.post('/login', (req, res) => {
 
 router.get('/list', (req, res) => {
     return User.find((err, user) => {
-        if (err) throw err;
+        if (err) return res.json(err);
         res.json({ details: user, success: 'success' })
     })
 });

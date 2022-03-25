@@ -56,7 +56,10 @@ const UserSchema = mongoose.Schema({
     logintype: {
       type: String,
       required: false
-    }
+    },
+    posts:{
+      type: mongoose.Schema.Types.ObjectId, ref: "Plan"
+   }
 });
 
 const User = mongoose.model('User', UserSchema)

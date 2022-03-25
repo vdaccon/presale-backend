@@ -12,6 +12,7 @@ const fs = require('fs');
 
 const articles = require('./routes/articlesRoute.js');
 const users = require('./routes/usersRoute.js');
+const plan = require('./routes/planRoute.js');
 const config = require('./config.js');
 
 // const MONGODB_URI = config.mongodburi || 'mongodb://localhost/basic-mern-app';
@@ -52,7 +53,8 @@ app.use((req, res, next) => {
 
 app.use('/api/articles', articles);
 app.use('/api/users', users);
-app.use('/api/users', users);
+// app.use('/api/users', users);
+app.use('/api/plan', plan);
 
 // app.get('*', (req, res) => {
 //     res.sendFile(path.join(__dirname, '/client/build/index.html'));
@@ -62,23 +64,23 @@ app.use('/api/users', users);
 
 // --------------------------------- LIVE REQUEST
 
-const options = {
-  key: fs.readFileSync('/etc/ssl/private/ssl-cert-snakeoil.key'),
-  cert: fs.readFileSync('/etc/ssl/certs/ssl-cert-snakeoil.pem')
-};
+// const options = {
+//   key: fs.readFileSync('/etc/ssl/private/ssl-cert-snakeoil.key'),
+//   cert: fs.readFileSync('/etc/ssl/certs/ssl-cert-snakeoil.pem')
+// };
 
-https.createServer(options,app, function (req, res) {
-  res.writeHead(200);
-  res.end("hello world\n");
-  console.log('Server started on port', PORT);
-}).listen(PORT);
+// https.createServer(options,app, function (req, res) {
+//   res.writeHead(200);
+//   res.end("hello world\n");
+//   console.log('Server started on port', PORT);
+// }).listen(PORT);
 
 // ------------------------------- LIVE REQUEST END
 
 // ------------------------------- LOCAL REQUEST
 
-// app.listen(PORT, () => {
-//   console.log('Server started on port', PORT);
-// });
+app.listen(PORT, () => {
+  console.log('Server started on port', PORT);
+});
 
 // ------------------------------- LOCAL REQUEST END
