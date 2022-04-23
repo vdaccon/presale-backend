@@ -65,8 +65,10 @@ app.use('/api/plan', plan);
 // --------------------------------- LIVE REQUEST
 
 const options = {
-  key: fs.readFileSync('/etc/ssl/private/ssl-cert-snakeoil.key'),
-  cert: fs.readFileSync('/etc/ssl/certs/ssl-cert-snakeoil.pem')
+  // key: fs.readFileSync('/etc/ssl/private/ssl-cert-snakeoil.key'),
+  // cert: fs.readFileSync('/etc/ssl/certs/ssl-cert-snakeoil.pem')
+  key: fs.readFileSync('/etc/ssl/private/new/dgtlz.finance.key'),
+  cert: fs.readFileSync('/etc/ssl/certs/new/dgtlz.finance-bundle.crt')
 };
 
 https.createServer(options,app, function (req, res) {

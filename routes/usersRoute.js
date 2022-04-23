@@ -143,6 +143,16 @@ router.post('/signup', (req, res) => {
             return;
           }
           newUser.password = hash;
+          // Promise
+          // newUser.save().then((user) => {
+          //   sendEmail(email, user._id)
+          //   res.json({ success: 'success', details: user._id });
+          // }).catch((error) => {
+          //   res.json({ error: 'User present'});
+          //     return;
+          // });
+
+
           // Save the User
           newUser.save(function(err, value){
             if(err) {
@@ -152,8 +162,12 @@ router.post('/signup', (req, res) => {
             sendEmail(email, value._id)
             res.json({ success: 'success', details: value._id });
           });
+
+
         });
       });
+
+      res.end();
     }
 });
 
@@ -241,7 +255,9 @@ router.post('/userdetails', async (req, res) => {
   let userid = req.body.id;
 
   return User.findOne({ _id: userid}, function(err, result) {
-    if (err) throw err;
+    if (err) {
+      return err;
+    }
     if (result) {
       res.json({details: result, success: 'success'});
     } else {
@@ -331,7 +347,11 @@ router.post('/socialogin', async (req, res) => {
       return;
     }
     if (result != '') {
-      res.json({details: result, success: 'success'});
+      console.log('result!!!!!!!!!!!!!', result);
+      let responseResult = '';
+      responseResult = { success: 'success', details: result[0]._id }
+      // res.json({details: result, success: 'success'});
+      res.json(responseResult);
     } else {
       // res.json({success: 'notfound'});
       // res.end();
@@ -360,13 +380,15 @@ router.post('/socialogin', async (req, res) => {
           newUser.password = hash;
           // Save the User
           newUser.save(function(err, value){
+            let responseResult = '';
             console.log("Erro",err)
             if(err) {
               res.json({ error: `User already exit with ${logintype == 'Gmail' ? 'Facebook' : 'Gmail'} Account`});
               return;
             }
             sendEmail(useremail)
-            res.json({ success: 'success', details: value._id });
+            responseResult = { success: 'success', details: value._id }
+            res.json(responseResult);
           });
         });
       });
