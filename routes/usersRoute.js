@@ -99,9 +99,6 @@ router.post('/signup', (req, res) => {
                   errors = {...errors, ...error};
                   res.json({ errors: { invalidCredentials: 'Email is already exist.' }, da: udata });
                   return;
-              }else{
-                  console.log("aaaaaa",isUnique)
-                  console.log("udata---",udata)
               }
           }
         }
@@ -166,8 +163,6 @@ router.post('/signup', (req, res) => {
 
         });
       });
-
-      res.end();
     }
 });
 
@@ -291,9 +286,10 @@ router.post('/imageUpload', async (req, res) => {
 });
 
 router.post('/userProfileUpdate', async (req, res) => {
+  console.log('update pro --', req.body);
   let userid = req.body._id;
   let location = req.body.location;
-  let mobile = req.body.phone;
+  let mobile = req.body.mobile;
 
   const filter = { _id: userid };
   const update = { 
@@ -348,10 +344,10 @@ router.post('/socialogin', async (req, res) => {
     }
     if (result != '') {
       console.log('result!!!!!!!!!!!!!', result);
-      let responseResult = '';
-      responseResult = { success: 'success', details: result[0]._id }
-      // res.json({details: result, success: 'success'});
-      res.json(responseResult);
+      // let responseResult = {};
+      // responseResult = { success: 'success', details: result[0]._id }
+      // res.json(responseResult);
+      res.json({details: result[0]._id, success: 'success'});
     } else {
       // res.json({success: 'notfound'});
       // res.end();
