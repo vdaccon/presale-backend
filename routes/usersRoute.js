@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const config = require('../config');
+const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 const User = require('../models/usersModel.js');
 
@@ -127,7 +128,8 @@ router.post('/signup', (req, res) => {
         iskyc: false,
         logintype: logintype,
         mobile: '',
-        location: ''
+        location: '',
+        customerid:  uuidv4(),
       });
 
       // Generate the Salt
@@ -361,7 +363,8 @@ router.post('/socialogin', async (req, res) => {
         logintype: logintype,
         username: `${name.charAt(0).toLowerCase()}.${lastname.toLowerCase()}@${new Date()}`,
         mobile: '',
-        location: ''
+        location: '',
+        customerid:  uuidv4(),
       });
 
       // Generate the Salt

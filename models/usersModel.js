@@ -57,6 +57,10 @@ const UserSchema = mongoose.Schema({
       type: String,
       required: false
     },
+    customerid: {
+      type: String,
+      required: false
+    },
     posts:{
       type: mongoose.Schema.Types.ObjectId, ref: "Plan"
    }

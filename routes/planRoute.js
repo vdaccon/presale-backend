@@ -41,7 +41,6 @@ router.post('/confirmPlan', (req, res) => {
     plantype: req.body.duration.type,
     username: req.body.userDetails.username,
     userid: req.body.userid,
-    plantype: req.body.duration.type,
     planduration: req.body.duration.month,
     amount: req.body.amount.amount,
     intreset: req.body.interest,
