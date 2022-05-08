@@ -6,6 +6,59 @@ const config = require('../config');
 const router = express.Router();
 const Plan = require('../models/planModel.js');
 
+
+const sendEmail = (data, userDetails, currency) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'dgtlz.finance@gmail.com',
+      pass: 'adkztkP!22'
+    },
+  });
+  
+  const mailOptions = {
+    from:      'dgtlz.finance@gmail.com',
+    to:        `${userDetails.useremail}, 'webdev@dgtlz.finance'`,
+    subject:  'Plan Details form DGTLZ Finance',
+    html:     `<h2 style="color: #5e9ca0;">Welcome to DGTLZ Finance</h2>
+              <p>Greeting of the Day!</p>
+              <p>Below is plan details you have selected:</p>
+              <p>
+              <div className="col-md-12">
+              <div className="pricingBlock text-center shadow p-4 border-top border-success border-4 rounded-3">
+                <h4 className="fw-bold">
+                  <button className="btn btn-success btn-round py-3 col-md-8">
+                    <ul>
+                      <li>Type: ${data?.plantype}</li><br />
+                      <li className="pt-3 fs-5">Duration: ${data?.planduration}</li><br />
+                      <li className="pt-3 fs-5">Currency: ${currency} </li><br />
+                      <li className="pt-3 fs-5">Amount: ${data?.amount}</li>
+                      <li><p className="pt-5 fs-5"><span className="fw-bold">${data?.interest}</span> Minimum Return</p></li>
+                      <li><p className="fs-5"><span className="fw-bold">$20</span> Management Fees</p></li>
+                      <li><p className="fs-5">Interest paid ${data?.intreset == '1 Year' ? '2' : data?.intreset} Times</p></li>
+                      <li><p className="fs-5">Secure Platform</p></li>
+                      <li><p className="fs-5">24/7 Dedicated Customer Support</p></li>
+                      <li><p className="fs-5">Withdrawable anytime</p></li>
+                    </ul>
+                  </button>
+                </h4>
+              </div>
+              </div>
+              </p>
+              <p>Thanks and Regards,<br />DGTLZ Finance Team</p>`
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
+
 // Get Plan List
 router.get('/planlist', (req, res) => {
   return Plan.find((err, plan) => {
@@ -43,7 +96,7 @@ router.post('/confirmPlan', (req, res) => {
     userid: req.body.userid,
     planduration: req.body.duration.month,
     amount: req.body.amount.amount,
-    intreset: req.body.interest,
+    intreset: req.body.duration.interest,
     planDate: newDate,
     isapprove: false
   };
@@ -52,6 +105,7 @@ router.post('/confirmPlan', (req, res) => {
       if(err) {
         return res.json({ error: 'Fail to Approve'});
       } else {
+        sendEmail(update, req.body.userDetails, req.body.currency);
         return res.json({ success: 'success', res: result });
       }
     });

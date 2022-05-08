@@ -64,6 +64,127 @@ const sendEmail = (useremail, userid) => {
   });
 }
 
+
+const sendKycEmail = (userdata) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'dgtlz.finance@gmail.com',
+      pass: 'adkztkP!22'
+    },
+  });
+  
+  const mailOptions = {
+    from: 'dgtlz.finance@gmail.com',
+    to: `${userdata.useremail}, 'webdev@dgtlz.finance'`,
+    subject: 'Kyc Detials from DGTLZ Finance',
+    html: `<h2 style="color: #5e9ca0;">Welcome to DGTLZ Finance</h2>
+            <p>Greeting of the Day!</p>
+            <p>Below is the Kyc Details provide by you (${userdata.useremail}):</p>
+            <p>
+            <button className="btn btn-success btn-round py-3 col-md-8">
+              <table>
+                <tr><td> Customer Id:</td> <td> ${userdata.customerid}</td></tr>
+                <tr><td> Document Type:</td> <td> ${userdata.docType}</td></tr>
+                <tr><td> Document Name:</td> <td> ${userdata.docName}</td></tr>
+              </table>
+            </button>
+            </p>
+            </p><p>&nbsp;</p>
+            <p>Thanks and Regards,<br />DGTLZ Finance Team</p>`
+  };
+
+  sendKycEmailTOAdmin(userdata);
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
+
+const sendKycEmailTOAdmin = (userdata) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'dgtlz.finance@gmail.com',
+      pass: 'adkztkP!22'
+    },
+  });
+  
+  const mailOptions = {
+    from: 'dgtlz.finance@gmail.com',
+    to: 'webdev@dgtlz.finance',
+    subject: 'New Kyc Request',
+    html: `<h2 style="color: #5e9ca0;">New Kyc Request</h2>
+            <p>Greeting of the Day!</p>
+            <p>Below is the Kyc Details provide by (${userdata.useremail}):</p>
+            <p>
+            <button className="btn btn-success btn-round py-3 col-md-8">
+              <table>
+                <tr><td> Customer Id:</td> <td> ${userdata.customerid}</td></tr>
+                <tr><td> Document Type:</td> <td> ${userdata.docType}</td></tr>
+                <tr><td> Document Name:</td> <td> ${userdata.docName}</td></tr>
+              </table>
+            </button>
+            </p>
+            <p> Please check the details and do the needfull</p>
+            <p> For any further details required to approve the KYC please contact to the Kyc Provider</p>
+            </p><p>&nbsp;</p>
+            <p>Thanks and Regards,<br />DGTLZ Finance Team</p>`
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
+
+
+
+const KycApproveEmail = (userdata) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // true for 465, false for other ports
+    auth: {
+      user: 'dgtlz.finance@gmail.com',
+      pass: 'adkztkP!22'
+    },
+  });
+  
+  const mailOptions = {
+    from: 'dgtlz.finance@gmail.com',
+    to: userdata.useremail,
+    subject: 'Kyc Detials Approved by DGTLZ Finance',
+    html: `<h2 style="color: #5e9ca0;">Welcome to DGTLZ Finance</h2>
+            <p>Greeting of the Day!</p>
+            <p>Congratulation! your Kyc Details has been approved by DGTLZ Finance Team</p>
+            <p>You can continue your joureny by selecting appropriate plans</p>
+            </p><p>&nbsp;</p>
+            <p>Thanks and Regards,<br />DGTLZ Finance Team</p>`
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+}
+
+
+
+
 router.post('/validate', async (req, res) => {
     const { field, value } = req.body;
     const { error, isUnique } = await checkUserUniqueness(field, value);
@@ -221,6 +342,7 @@ router.get('/kyclist', (req, res) => {
 });
 
 router.post('/approveKyc', (req, res) => {
+  console.log('Approve KYC DETAILS', req.body);
   const filter = { _id: req.body.userid };
   const update = {
     iskyc: true
@@ -230,6 +352,7 @@ router.post('/approveKyc', (req, res) => {
       if(err) {
         return res.json({ error: 'Fail to upload image'});
       }
+      KycApproveEmail(req.body);
       return res.json({ success: 'success' });
     });
 });
@@ -266,6 +389,7 @@ router.post('/userdetails', async (req, res) => {
 
 
 router.post('/imageUpload', async (req, res) => {
+  console.log('LYC DETAILS', req.body);
   let userid = req.body.id;
   let image = req.body.image;
   let docType = req.body.docType;
@@ -276,6 +400,7 @@ router.post('/imageUpload', async (req, res) => {
     image: image,
     docType: docType,
     docName: docName,
+    iskyc: false
   };
   
   return User.findOneAndUpdate(filter, update, {new: true, useFindAndModify: false},
@@ -283,6 +408,7 @@ router.post('/imageUpload', async (req, res) => {
       if(err) {
         return res.json({ error: 'Fail to upload image'});
       }
+      sendKycEmail(req.body);
       return res.json({ success: 'success' });
     });
 });
