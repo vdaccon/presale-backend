@@ -31,13 +31,13 @@ const sendEmail = (data, userDetails, currency) => {
                 <h4 className="fw-bold">
                   <button className="btn btn-success btn-round py-3 col-md-8">
                     <ul>
-                      <li>Type: ${data?.plantype}</li><br />
-                      <li className="pt-3 fs-5">Duration: ${data?.planduration}</li><br />
+                      <li>Type: ${data.plantype}</li><br />
+                      <li className="pt-3 fs-5">Duration: ${data.planduration}</li><br />
                       <li className="pt-3 fs-5">Currency: ${currency} </li><br />
-                      <li className="pt-3 fs-5">Amount: ${data?.amount}</li>
-                      <li><p className="pt-5 fs-5"><span className="fw-bold">${data?.interest}</span> Minimum Return</p></li>
+                      <li className="pt-3 fs-5">Amount: ${data.amount}</li>
+                      <li><p className="pt-5 fs-5"><span className="fw-bold">${data.interest}</span> Minimum Return</p></li>
                       <li><p className="fs-5"><span className="fw-bold">$20</span> Management Fees</p></li>
-                      <li><p className="fs-5">Interest paid ${data?.intreset == '1 Year' ? '2' : data?.intreset} Times</p></li>
+                      <li><p className="fs-5">Interest paid ${data.intreset == '1 Year' ? '2' : data.intreset} Times</p></li>
                       <li><p className="fs-5">Secure Platform</p></li>
                       <li><p className="fs-5">24/7 Dedicated Customer Support</p></li>
                       <li><p className="fs-5">Withdrawable anytime</p></li>
