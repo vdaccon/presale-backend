@@ -96,7 +96,7 @@ router.post('/confirmPlan', (req, res) => {
     userid: req.body.userid,
     planduration: req.body.duration.month,
     amount: req.body.amount.amount,
-    intreset: req.body.duration.interest,
+    intreset: req.body.interest,
     planDate: newDate,
     isapprove: false
   };
